@@ -4,23 +4,6 @@ import { createClient } from '@/utils/supabase/server';
 import { AppProvider } from '@/context/AppContext';
 import MainLayout from '@/components/MainLayout';
 
-import HomeTab from '@/tabs/_1Home';
-import DiscoverTab from '@/tabs/_2Discover';
-import EventsTab from '@/tabs/_3Events';
-import NotificationsTab from '@/tabs/_4Notifications';
-import SettingsTab from '@/tabs/_5Settings';
-
-function AppContent({ tabId }) {
-  switch (tabId) {
-    case 0: return <HomeTab />;
-    case 1: return <DiscoverTab />;
-    case 2: return <EventsTab />;
-    case 3: return <NotificationsTab />;
-    case 4: return <SettingsTab />;
-    default: return <p>Seite nicht gefunden.</p>;
-  }
-}
-
 export default async function Home() {
   const supabase = await createClient();
 
@@ -32,12 +15,11 @@ export default async function Home() {
     redirect('/login');
   }
 
-  // 3. Wenn eingeloggt, wird die App normal gerendert
+  // 3. Wenn eingeloggt, rendern wir das Layout.
+  // Die Tabs importieren wir jetzt direkt im MainLayout, wo sie gebraucht werden!
   return (
     <AppProvider>
-      <MainLayout>
-        {(tabId) => <AppContent tabId={tabId} />}
-      </MainLayout>
+      <MainLayout />
     </AppProvider>
   );
 }

@@ -2,6 +2,13 @@
 import { useApp } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Hier importieren wir deine Tabs jetzt sicher auf der Client-Seite
+import HomeTab from '@/tabs/_1Home';
+import DiscoverTab from '@/tabs/_2Discover';
+import EventsTab from '@/tabs/_3Events';
+import NotificationsTab from '@/tabs/_4Notifications';
+import SettingsTab from '@/tabs/_5Settings';
+
 const PAGES = [
   { id: 0, label: '🏠', color: '#dde8b9' },
   { id: 1, label: '🔎', color: '#e8d2ae' },
@@ -10,7 +17,7 @@ const PAGES = [
   { id: 4, label: '⚙️', color: '#C8AEB1' },
 ];
 
-export default function MainLayout({ children }) {
+export default function MainLayout() {
   const { activeTab, setActiveTab, direction, setDirection } = useApp();
 
   const handleTabClick = (targetTabId) => {
@@ -23,7 +30,7 @@ export default function MainLayout({ children }) {
   };
 
   const handleDragEnd = (event, info) => {
-    const swipeThreshold = 30; // Etwas feinfühliger für schnelleres Swipen
+    const swipeThreshold = 30;
 
     if (info.offset.x < -swipeThreshold && activeTab < PAGES.length - 1) {
       setDirection('next');
@@ -31,6 +38,18 @@ export default function MainLayout({ children }) {
     } else if (info.offset.x > swipeThreshold && activeTab > 0) {
       setDirection('prev');
       setActiveTab(activeTab - 1);
+    }
+  };
+
+  // Hilfsfunktion, die genau den richtigen Tab zurückgibt
+  const renderTabContent = (id) => {
+    switch (id) {
+      case 0: return <HomeTab />;
+      case 1: return <DiscoverTab />;
+      case 2: return <EventsTab />;
+      case 3: return <NotificationsTab />;
+      case 4: return <SettingsTab />;
+      default: return <p>Seite nicht gefunden.</p>;
     }
   };
 
@@ -51,10 +70,7 @@ export default function MainLayout({ children }) {
 
   return (
     <div style={styles.appContainer}>
-      {/* Der Hintergrund wechselt jetzt sofort mit, wenn sich der Tab ändert */}
       <div style={{ ...styles.viewport, backgroundColor: PAGES[activeTab].color }}>
-        
-        {/* mode="popLayout" erlaubt parallele Animationen ohne Blockieren! */}
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
           <motion.div
             key={activeTab}
@@ -62,20 +78,16 @@ export default function MainLayout({ children }) {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.1}
             onDragEnd={handleDragEnd}
-            
-            // Wir übergeben die Richtung als custom-Prop direkt an die Varianten.
-            // Das bricht den React-Verzögerungs-Bug endgültig.
             custom={direction}
             variants={animVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            
-            // Eine etwas knackigere Animation, perfekt für schnelles Dauerswipen
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
             style={styles.pageWrapper}
           >
-            {children(activeTab)}
+            {/* Hier wird die Funktion direkt mit der ID aufgerufen */}
+            {renderTabContent(activeTab)}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -102,28 +114,8 @@ export default function MainLayout({ children }) {
 
 const styles = {
   appContainer: { display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif' },
-  viewport: { 
-    flex: 1, 
-    overflow: 'hidden', 
-    position: 'relative', 
-    width: '100%', 
-    transition: 'background-color 0.2s ease' // Schnellere Farbanpassung im Hintergrund
-  },
-  pageWrapper: { 
-    width: '100%', 
-    height: '100%', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    padding: '2rem', 
-    touchAction: 'pan-y',
-    // absolut wichtig für mode="popLayout", damit die alte Seite beim Rausschmeißen 
-    // nicht die neue physisch nach unten drückt
-    position: 'absolute',
-    top: 0,
-    left: 0
-  },
+  viewport: { flex: 1, overflow: 'hidden', position: 'relative', width: '100%', transition: 'background-color 0.2s ease' },
+  pageWrapper: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', touchAction: 'pan-y', position: 'absolute', top: 0, left: 0 },
   bottomNav: { height: '60px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-around', backgroundColor: '#fff', zIndex: 10, paddingBottom: 'env(safe-area-inset-bottom)' },
   navButton: { background: 'none', border: 'none', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '24px', transition: 'all 0.2s', padding: '10px 0' }
 };
