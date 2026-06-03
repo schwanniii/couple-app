@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   /* Hier definierst du deine 5 Wunschfarben (Ersetze die Hex-Codes durch deine echten Farben) */
   --color-beige: #E6B89C;
   --color-grey: #333232;
@@ -8,13 +8,20 @@
   --color-darkred: #B70037;
   --color-lightblue: #C7EDE4;
 
-  /* Hier legen wir fest, dass die Standard-Hintergrund- und Textfarben deine neuen Farben nutzen */
+  /* Standard-Hintergrundfarbe */
   /* --color-background: var(--color-beige);
   --color-foreground: var(--color-grey); */
 }
 
-body {
-  /* background: var(--color-background);
-  color: var(--color-foreground); */
+html, body {
+  height: 100dvh; /* Nutzt die exakte, dynamische Handy-Höhe */
+  width: 100vw;
+  overflow: hidden; /* Verbietet der gesamten App das Scrollen */
+  overscroll-behavior-y: contain; /* Blockiert den Android Pull-to-refresh Ruck */
+  margin: 0;
+  padding: 0;
+  position: fixed; /* Klebt den Viewport bombenfest */
   font-family: Arial, Helvetica, sans-serif;
+  
+  /* Hier kannst du optional eine Standard-Hintergrundfarbe setzen */
 }

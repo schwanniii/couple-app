@@ -1,6 +1,8 @@
 'use client';
 import { useApp } from '@/context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // Hier importieren wir deine Tabs jetzt sicher auf der Client-Seite
 import HomeTab from '@/tabs/_1Home';
@@ -18,6 +20,7 @@ const PAGES = [
 ];
 
 export default function MainLayout() {
+
   const { activeTab, setActiveTab, direction, setDirection } = useApp();
 
   const handleTabClick = (targetTabId) => {
@@ -70,8 +73,11 @@ export default function MainLayout() {
 
   return (
     <div style={styles.appContainer}>
-      <div style={{ ...styles.viewport, backgroundColor: PAGES[activeTab].color }}>
+      <main style={{ ...styles.viewport, backgroundColor: PAGES[activeTab].color }}>
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+          <Analytics/>
+          <SpeedInsights/>
+
           <motion.div
             key={activeTab}
             drag="x"
@@ -90,8 +96,9 @@ export default function MainLayout() {
             {renderTabContent(activeTab)}
           </motion.div>
         </AnimatePresence>
-      </div>
+      </main>
 
+      {/* Tabbar */}
       <nav style={styles.bottomNav}>
         {PAGES.map((page) => (
           <button
@@ -113,9 +120,56 @@ export default function MainLayout() {
 }
 
 const styles = {
-  appContainer: { display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif' },
-  viewport: { flex: 1, overflow: 'hidden', position: 'relative', width: '100%', transition: 'background-color 0.2s ease' },
-  pageWrapper: { width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', touchAction: 'pan-y', position: 'absolute', top: 0, left: 0 },
-  bottomNav: { height: '60px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-around', backgroundColor: '#fff', zIndex: 10, paddingBottom: 'env(safe-area-inset-bottom)' },
-  navButton: { background: 'none', border: 'none', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '24px', transition: 'all 0.2s', padding: '10px 0' }
+  appContainer: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    height: '100dvh', // FIX 1: Dynamische Handy-Höhe gegen den Android-Ruck
+    width: '100vw',
+    overflow: 'hidden', 
+    fontFamily: 'sans-serif',
+    position: 'fixed' // FIX 2: Klebt den äußeren Rahmen bombenfest
+  },
+  viewport: { 
+    flex: 1, 
+    overflowY: 'auto', // FIX 3: Erlaubt das Scrollen NUR innerhalb des Hauptinhalts
+    webkitOverflowScrolling: 'touch', // Macht das Scrollen auf Touch-Screens butterweich
+    position: 'relative', 
+    width: '100%', 
+    transition: 'background-color 0.2s ease' 
+  },
+  pageWrapper: { 
+    width: '100%', 
+    height: '100%', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: '2rem', 
+    touchAction: 'pan-y', 
+    position: 'absolute', 
+    top: 0, 
+    left: 0 
+  },
+  bottomNav: { 
+    height: '60px', 
+    borderTop: '1px solid #eee', 
+    display: 'flex', 
+    justifyContent: 'space-around', 
+    backgroundColor: '#fff', 
+    zIndex: 10, 
+    paddingBottom: 'env(safe-area-inset-bottom)',
+    flexShrink: 0 // FIX 4: Verhindert, dass der Inhalt die Tabbar zusammengestaucht
+  },
+  navButton: { 
+    background: 'none', 
+    border: 'none', 
+    flex: 1, 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    cursor: 'pointer', 
+    fontSize: '24px', 
+    transition: 'all 0.2s', 
+    padding: '10px 0' 
+  }
 };

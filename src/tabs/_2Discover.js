@@ -13,5 +13,5 @@ export default function DiscoverTab() {
 
 
 
-// return <p>Fragen und Antworten, eigene Fragen stellen.
-// </p>;
+// Fragen und Antworten, eigene Fragen stellen.
+// auf Supabase-Tabellen zugreifen können testen
