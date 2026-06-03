@@ -73,11 +73,12 @@ export default function MainLayout() {
 
   return (
     <div style={styles.appContainer}>
+
+      <Analytics/>
+      <SpeedInsights/>
+
       <main style={{ ...styles.viewport, backgroundColor: PAGES[activeTab].color }}>
         <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-          <Analytics/>
-          <SpeedInsights/>
-
           <motion.div
             key={activeTab}
             drag="x"
